@@ -16,6 +16,8 @@
  */
 package org.apache.commons.imaging.common;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.NumberFormat;
 
 /**
@@ -46,8 +48,9 @@ public class RationalNumber extends Number {
 
     /**
      * Constructs an instance based on signed integers
+     *
      * @param numerator a 32-bit signed integer
-     * @param divisor a non-zero 32-bit signed integer
+     * @param divisor   a non-zero 32-bit signed integer
      */
     public RationalNumber(final int numerator, final int divisor) {
         this.numerator = numerator;
@@ -57,10 +60,11 @@ public class RationalNumber extends Number {
 
     /**
      * Constructs an instance supports either signed or unsigned integers.
-     * @param numerator a numerator in the indicated form (signed or unsigned)
-     * @param divisor a non-zero divisor in the indicated form (signed or unsigned)
+     *
+     * @param numerator    a numerator in the indicated form (signed or unsigned)
+     * @param divisor      a non-zero divisor in the indicated form (signed or unsigned)
      * @param unsignedType indicates whether the input values are to be treated
-     * as unsigned.
+     *                     as unsigned.
      */
     public RationalNumber(final int numerator, final int divisor, final boolean unsignedType) {
         this.unsignedType = unsignedType;
@@ -76,14 +80,15 @@ public class RationalNumber extends Number {
     /**
      * A private constructor for methods such as negate() that create instances
      * of this class using the content of the current instance.
-     * @param numerator a valid numerator
-     * @param divisor a valid denominator
+     *
+     * @param numerator    a valid numerator
+     * @param divisor      a valid denominator
      * @param unsignedType indicates how numerator and divisor values
-     * are to be interpreted.
+     *                     are to be interpreted.
      */
-    private RationalNumber(final long numerator, final long divisor, final boolean unsignedType){
+    private RationalNumber(final long numerator, final long divisor, final boolean unsignedType) {
         this.numerator = numerator;
-        this.divisor   = divisor;
+        this.divisor = divisor;
         this.unsignedType = unsignedType;
     }
 
@@ -133,6 +138,7 @@ public class RationalNumber extends Number {
      * However, if no such divisor exists, there is no numerically correct
      * way to perform the negation. When a negation cannot be performed correctly,
      * this method throws an unchecked exception.
+     *
      * @return a valid instance with a negated value.
      */
     public RationalNumber negate() {
@@ -157,7 +163,7 @@ public class RationalNumber extends Number {
                 if ((n >> 31) == 1) {
                     throw new NumberFormatException(
                             "Unsigned numerator is too large to negate "
-                            + numerator);
+                                    + numerator);
                 }
             }
         }
@@ -182,7 +188,7 @@ public class RationalNumber extends Number {
 
     @Override
     public int intValue() {
-        return (int)(numerator / divisor);
+        return (int) (numerator / divisor);
     }
 
     @Override
@@ -222,7 +228,7 @@ public class RationalNumber extends Number {
         }
 
         public static Option factory(final RationalNumber rationalNumber, final double value) {
-            return new Option(rationalNumber, Math.abs(rationalNumber .doubleValue() - value));
+            return new Option(rationalNumber, Math.abs(rationalNumber.doubleValue() - value));
         }
 
         @Override
@@ -231,22 +237,44 @@ public class RationalNumber extends Number {
         }
     }
 
+    public static boolean[] branches = new boolean[100];
+
+    public static RationalNumber valueOf(double value) {
+        RationalNumber result = valueOf_2(value);
+        try {
+            FileWriter myWriter = new FileWriter("value.txt");
+            String s = "";
+            for (int i = 0; i < branches.length; i++) {
+                s += branches[i] + ",";
+            }
+            myWriter.write(s);
+            myWriter.close();
+
+        } catch (IOException e) {
+            System.out.println("Write fail");
+        }
+        return result;
+    }
+
     /**
      * Calculate rational number using successive approximations.
      *
      * @param value rational number double value
      * @return the RationalNumber representation of the double value
      */
-    public static RationalNumber valueOf(double value) {
+    public static RationalNumber valueOf_2(double value) {
         if (value >= Integer.MAX_VALUE) {
+            branches[0] = true;
             return new RationalNumber(Integer.MAX_VALUE, 1);
         }
         if (value <= -Integer.MAX_VALUE) {
+            branches[1] = true;
             return new RationalNumber(-Integer.MAX_VALUE, 1);
         }
 
         boolean negative = false;
         if (value < 0) {
+            branches[2] = true;
             negative = true;
             value = Math.abs(value);
         }
@@ -255,23 +283,30 @@ public class RationalNumber extends Number {
         RationalNumber h;
 
         if (value == 0) {
+            branches[3] = true;
             return new RationalNumber(0, 1);
         }
         if (value >= 1) {
+            branches[4] = true;
             final int approx = (int) value;
             if (approx < value) {
+                branches[5] = true;
                 l = new RationalNumber(approx, 1);
                 h = new RationalNumber(approx + 1, 1);
             } else {
+                branches[6] = true;
                 l = new RationalNumber(approx - 1, 1);
                 h = new RationalNumber(approx, 1);
             }
         } else {
+            branches[7] = true;
             final int approx = (int) (1.0 / value);
             if ((1.0 / approx) < value) {
+                branches[8] = true;
                 l = new RationalNumber(1, approx);
                 h = new RationalNumber(1, approx - 1);
             } else {
+                branches[9] = true;
                 l = new RationalNumber(1, approx + 1);
                 h = new RationalNumber(1, approx);
             }
@@ -282,7 +317,7 @@ public class RationalNumber extends Number {
         Option bestOption = (low.error < high.error) ? low : high;
 
         final int maxIterations = 100; // value is quite high, actually.
-                                       // shouldn't matter.
+        // shouldn't matter.
         for (int count = 0; bestOption.error > TOLERANCE
                 && count < maxIterations; count++) {
             final RationalNumber mediant = RationalNumber.factoryMethod(
@@ -291,13 +326,17 @@ public class RationalNumber extends Number {
             final Option mediantOption = Option.factory(mediant, value);
 
             if (value < mediant.doubleValue()) {
+                branches[10] = true;
                 if (high.error <= mediantOption.error) {
+                    branches[11] = true;
                     break;
                 }
 
                 high = mediantOption;
             } else {
+                branches[12] = true;
                 if (low.error <= mediantOption.error) {
+                    branches[13] = true;
                     break;
                 }
 
@@ -305,6 +344,7 @@ public class RationalNumber extends Number {
             }
 
             if (mediantOption.error < bestOption.error) {
+                branches[14] = true;
                 bestOption = mediantOption;
             }
         }
@@ -312,5 +352,4 @@ public class RationalNumber extends Number {
         return negative ? bestOption.rationalNumber.negate()
                 : bestOption.rationalNumber;
     }
-
 }

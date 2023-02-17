@@ -25,6 +25,7 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -338,24 +339,54 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
         }
         return mcu;
     }
-
+    boolean[] branches = new boolean[100];
     private void readMCU(final JpegInputStream is, final int[] preds, final Block[] mcu)
             throws ImageReadException {
+            readMCU_original(is,preds,mcu);
+            try {
+                FileWriter myWriter = new FileWriter("readMCU.txt");
+                String s = "";
+                for (int i = 0; i < branches.length; i++) {
+                    s += branches[i]+",";
+                }
+                myWriter.write(s);
+                myWriter.close();
+
+            } catch (IOException e){
+                System.out.println("Write fail");
+            }
+
+    }
+    private void readMCU_original(final JpegInputStream is, final int[] preds, final Block[] mcu)
+            throws ImageReadException {
         for (int i = 0; i < sosSegment.numberOfComponents; i++) {
+            branches[0]=true;
             final SosSegment.Component scanComponent = sosSegment.getComponents(i);
             SofnSegment.Component frameComponent = null;
             for (int j = 0; j < sofnSegment.numberOfComponents; j++) {
+                branches[1]=true;
                 if (sofnSegment.getComponents(j).componentIdentifier == scanComponent.scanComponentSelector) {
+                    branches[2] = true;
                     frameComponent = sofnSegment.getComponents(j);
                     break;
                 }
+                else{
+                    branches[3] = true;
+                }
             }
+            branches[4] = true;
             if (frameComponent == null) {
+                branches[5] = true;
                 throw new ImageReadException("Invalid component");
+            }
+            else{
+                branches[6] = true;
             }
             final Block fullBlock = mcu[i];
             for (int y = 0; y < frameComponent.verticalSamplingFactor; y++) {
+                branches[7] = true;
                 for (int x = 0; x < frameComponent.horizontalSamplingFactor; x++) {
+                    branches[8] = true;
                     Arrays.fill(zz, 0);
                     // page 104 of T.81
                     final int t = decode(
@@ -369,6 +400,7 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                     // "Decode_AC_coefficients", figure F.13, page 106 of T.81
                     int k = 1;
                     while (true) {
+                        branches[9] = true;
                         final int rs = decode(
                                 is,
                                 huffmanACTables[scanComponent.acCodingTableSelector]);
@@ -377,11 +409,17 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                         final int r = rrrr;
 
                         if (ssss == 0) {
+                            branches[10] = true;
                             if (r != 15) {
+                                branches[11] = true;
                                 break;
+                            }
+                            else{
+                                branches[12] = true;
                             }
                             k += 16;
                         } else {
+                            branches[13] = true;
                             k += r;
 
                             // "Decode_ZZ(k)", figure F.14, page 107 of T.81
@@ -389,11 +427,16 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                             zz[k] = extend(zz[k], ssss);
 
                             if (k == 63) {
+                                branches[14] = true;
                                 break;
+                            }
+                            else{
+                                branches[15] = true;
                             }
                             k++;
                         }
                     }
+                    branches[16] = true;
 
                     final int shift = (1 << (sofnSegment.precision - 1));
                     final int max = (1 << sofnSegment.precision) - 1;
@@ -401,32 +444,44 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                     final float[] scaledQuantizationTable = scaledQuantizationTables[frameComponent.quantTabDestSelector];
                     ZigZag.zigZagToBlock(zz, blockInt);
                     for (int j = 0; j < 64; j++) {
+                        branches[17] = true;
                         block[j] = blockInt[j] * scaledQuantizationTable[j];
                     }
+                    branches[18] = true;
                     Dct.inverseDCT8x8(block);
 
                     int dstRowOffset = 8 * y * 8
                             * frameComponent.horizontalSamplingFactor + 8 * x;
                     int srcNext = 0;
                     for (int yy = 0; yy < 8; yy++) {
+                        branches[19] = true;
                         for (int xx = 0; xx < 8; xx++) {
+                            branches[20] = true;
                             float sample = block[srcNext++];
                             sample += shift;
                             int result;
                             if (sample < 0) {
+                                branches[21] = true;
                                 result = 0;
                             } else if (sample > max) {
+                                branches[22] = true;
                                 result = max;
                             } else {
+                                branches[23] = true;
                                 result = fastRound(sample);
                             }
                             fullBlock.samples[dstRowOffset + xx] = result;
                         }
+                        branches[24] = true;
                         dstRowOffset += 8 * frameComponent.horizontalSamplingFactor;
                     }
+                    branches[25] = true;
                 }
+                branches[26] = true;
             }
+            branches[27] = true;
         }
+        branches[28] = true;
     }
 
     /**
