@@ -157,7 +157,7 @@ public class RationalNumber extends Number {
                 if ((n >> 31) == 1) {
                     throw new NumberFormatException(
                             "Unsigned numerator is too large to negate "
-                            + numerator);
+                                    + numerator);
                 }
             }
         }
@@ -238,51 +238,23 @@ public class RationalNumber extends Number {
      * @return the RationalNumber representation of the double value
      */
     public static RationalNumber valueOf(double value) {
-        if (value >= Integer.MAX_VALUE) {
-            return new RationalNumber(Integer.MAX_VALUE, 1);
-        }
-        if (value <= -Integer.MAX_VALUE) {
-            return new RationalNumber(-Integer.MAX_VALUE, 1);
-        }
 
-        boolean negative = false;
-        if (value < 0) {
-            negative = true;
-            value = Math.abs(value);
-        }
 
-        RationalNumber l;
-        RationalNumber h;
+        boolean negative = value < 0;
+        value = Math.abs(value);
+        value = Math.min(value,Integer.MAX_VALUE);
 
-        if (value == 0) {
-            return new RationalNumber(0, 1);
-        }
-        if (value >= 1) {
-            final int approx = (int) value;
-            if (approx < value) {
-                l = new RationalNumber(approx, 1);
-                h = new RationalNumber(approx + 1, 1);
-            } else {
-                l = new RationalNumber(approx - 1, 1);
-                h = new RationalNumber(approx, 1);
-            }
-        } else {
-            final int approx = (int) (1.0 / value);
-            if ((1.0 / approx) < value) {
-                l = new RationalNumber(1, approx);
-                h = new RationalNumber(1, approx - 1);
-            } else {
-                l = new RationalNumber(1, approx + 1);
-                h = new RationalNumber(1, approx);
-            }
-        }
+        RationalNumber l = getLow(value);
+        RationalNumber h = getHigh(value);
+
+
         Option low = Option.factory(l, value);
         Option high = Option.factory(h, value);
 
         Option bestOption = (low.error < high.error) ? low : high;
 
         final int maxIterations = 100; // value is quite high, actually.
-                                       // shouldn't matter.
+        // shouldn't matter.
         for (int count = 0; bestOption.error > TOLERANCE
                 && count < maxIterations; count++) {
             final RationalNumber mediant = RationalNumber.factoryMethod(
@@ -312,5 +284,54 @@ public class RationalNumber extends Number {
         return negative ? bestOption.rationalNumber.negate()
                 : bestOption.rationalNumber;
     }
+    public static RationalNumber getHigh(double value){
+        RationalNumber h;
+        if (value == 0) {
+            return new RationalNumber(0, 1);
+        }
+        if (value >= 1) {
+            final int approx = (int) value;
+            if (approx < value) {
+
+                h = new RationalNumber(approx + 1, 1);
+            } else {
+
+                h = new RationalNumber(approx, 1);
+            }
+        } else {
+            final int approx = (int) (1.0 / value);
+            if ((1.0 / approx) < value) {
+
+                h = new RationalNumber(1, approx - 1);
+            } else {
+
+                h = new RationalNumber(1, approx);
+            }
+        }
+        return h;
+    }
+    public static RationalNumber getLow(double value) {
+        RationalNumber l;
+        if (value == 0) {
+            return new RationalNumber(0, 1);
+        }
+        if (value >= 1) {
+            final int approx = (int) value;
+            if (approx < value) {
+                l = new RationalNumber(approx, 1);
+            } else {
+                l = new RationalNumber(approx - 1, 1);
+            }
+        } else {
+            final int approx = (int) (1.0 / value);
+            if ((1.0 / approx) < value) {
+                l = new RationalNumber(1, approx);
+            } else {
+                l = new RationalNumber(1, approx + 1);
+            }
+        }
+        return l;
+    }
+
 
 }
