@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -386,14 +387,37 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         }
     }
 
-    private void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser)
+    public static boolean[] branches = new boolean[18];
+    private void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser) throws IOException, ImageReadException {
+        parsePaletteEntries_original(xpmHeader, cParser);
+        try {
+            FileWriter myWriter = new FileWriter("parsePaletteEntries.txt");
+            String s = "";
+            for (int i = 0; i < branches.length; i++) {
+                s += i + " " + branches[i]+"\n";
+            }
+            myWriter.write(s);
+            myWriter.close();
+
+        } catch (IOException e){
+            System.out.println("Write fail");
+        }
+    }
+
+    private void parsePaletteEntries_original(final XpmHeader xpmHeader, final BasicCParser cParser)
             throws IOException, ImageReadException {
         final StringBuilder row = new StringBuilder();
         for (int i = 0; i < xpmHeader.numColors; i++) {
+            branches[0] = true;
+
             row.setLength(0);
             final boolean hasMore = parseNextString(cParser, row);
             if (!hasMore) {
+                branches[1] = true;
+
                 throw new ImageReadException("Parsing XPM file failed, " + "file ended while reading palette");
+            } else {
+                branches[2] = true;
             }
             final String name = row.substring(0, xpmHeader.numCharsPerPixel);
             final String[] tokens = BasicCParser.tokenizeRow(row.substring(xpmHeader.numCharsPerPixel));
@@ -402,6 +426,8 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
             int previousKeyIndex = Integer.MIN_VALUE;
             final StringBuilder colorBuffer = new StringBuilder();
             for (int j = 0; j < tokens.length; j++) {
+                branches[3] = true;
+                
                 final String token = tokens[j];
                 boolean isKey = false;
                 if (previousKeyIndex < (j - 1)
@@ -410,34 +436,60 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
                         || "g".equals(token)
                         || "c".equals(token)
                         || "s".equals(token)) {
+                    branches[4] = true;
+
                     isKey = true;
+                } else {
+                    branches[5] = true;
                 }
                 if (isKey) {
+                    branches[6] = true;
+
                     if (previousKeyIndex >= 0) {
+                        branches[7] = true;
+
                         final String key = tokens[previousKeyIndex];
                         final String color = colorBuffer.toString();
                         colorBuffer.setLength(0);
                         populatePaletteEntry(paletteEntry, key, color);
+                    } else {
+                        branches[8] = true;
                     }
                     previousKeyIndex = j;
                 } else {
+                    branches[9] = true;
+
                     if (previousKeyIndex < 0) {
+                        branches[10] = true;
                         break;
+                    } else {
+                        branches[11] = true;
                     }
                     if (colorBuffer.length() > 0) {
+                        branches[12] = true;
+
                         colorBuffer.append(' ');
+                    } else {
+                        branches[13] = true;
                     }
                     colorBuffer.append(token);
                 }
             }
+            branches[14] = true;
+
             if (previousKeyIndex >= 0 && colorBuffer.length() > 0) {
+                branches[15] = true;
+
                 final String key = tokens[previousKeyIndex];
                 final String color = colorBuffer.toString();
                 colorBuffer.setLength(0);
                 populatePaletteEntry(paletteEntry, key, color);
+            } else {
+                branches[16] = true;
             }
             xpmHeader.palette.put(name, paletteEntry);
         }
+        branches[17] = true;
     }
 
     private XpmHeader parseXpmHeader(final BasicCParser cParser)
