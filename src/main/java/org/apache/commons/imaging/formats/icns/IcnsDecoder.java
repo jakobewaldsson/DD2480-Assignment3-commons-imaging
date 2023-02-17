@@ -19,7 +19,8 @@ package org.apache.commons.imaging.formats.icns;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.io.FileWriter;
+import java.io.IOException;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.ImageBuilder;
@@ -201,13 +202,34 @@ final class IcnsDecoder {
         }
         return result;
     }
-
+    public static boolean[] branches = new boolean[100];
     public static BufferedImage decodeImage(final IcnsImageParser.IcnsElement[] icnsElements, final int index)
             throws ImageReadException {
+            BufferedImage result = decodeImage2(icnsElements,index);
+            try {
+                FileWriter myWriter = new FileWriter("decode.txt");
+                String s = "";
+                for (int i = 0; i < branches.length; i++) {
+                    s += branches[i]+",";
+                }
+                myWriter.write(s);
+                myWriter.close();
+
+            } catch (IOException e){
+                System.out.println("Write fail");
+            }
+            return result;
+    }
+    public static BufferedImage decodeImage2(final IcnsImageParser.IcnsElement[] icnsElements, final int index)
+        throws ImageReadException {
         final IcnsImageParser.IcnsElement imageElement = icnsElements[index];
         final IcnsType imageType = IcnsType.findImageType(imageElement.type);
         if (imageType == null) {
+            branches[0]= true;
             return null;
+        }
+        else{
+            branches[1] = true;
         }
 
         // PNG or JPEG 2000
@@ -222,20 +244,37 @@ final class IcnsDecoder {
             || imageType == IcnsType.ICNS_64x64_2x_32BIT_ARGB_IMAGE
             || imageType == IcnsType.ICNS_256x256_2x_32BIT_ARGB_IMAGE
             || imageType == IcnsType.ICNS_512x512_2x_32BIT_ARGB_IMAGE) {
+            branches[2] = true;
             BufferedImage image = null;
             try {
                 image = Imaging.getBufferedImage(imageElement.data);
+                branches[3] = true;
             } catch (final Exception ex) {
+
                 if (imageType.getWidth() <= 32) {
+                    branches[4] = true;
                     try {
                         image = decodeImageImpl(imageType, imageElement, icnsElements);
-                    } catch (final Exception ignored) { }
+                        branches[5] = true;
+                    } catch (final Exception ignored) {
+                        branches[6] = true;
+                    }
+                }
+                else{
+                    branches[7] = true;
                 }
                 if (image == null) {
+                    branches[8] = true;
                     image = new BufferedImage(imageType.getWidth(), imageType.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                }
+                else{
+                    branches[9] = true;
                 }
             }
             return image;
+        }
+        else{
+            branches[10] = true;
         }
 
         return decodeImageImpl(imageType, imageElement, icnsElements);
