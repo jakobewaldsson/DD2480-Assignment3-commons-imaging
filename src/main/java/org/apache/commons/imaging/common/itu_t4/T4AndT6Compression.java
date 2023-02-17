@@ -18,6 +18,7 @@ package org.apache.commons.imaging.common.itu_t4;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.FileWriter;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
@@ -522,6 +523,24 @@ public final class T4AndT6Compression {
         }
     }
 
+    public static boolean[] branches = new boolean[20];
+    public static byte[] decompressT6(final byte[] compressed, final int width, final int height) throws ImageReadException {
+        byte[] result = decompressT6_original(compressed, width, height);
+        try {
+            FileWriter myWriter = new FileWriter("decompressT6.txt");
+            String s = "";
+            for (int i = 0; i < branches.length; i++) {
+                s += i + " " + branches[i]+"\n";
+            }
+            myWriter.write(s);
+            myWriter.close();
+
+        } catch (IOException e){
+            System.out.println("Write fail");
+        }
+        return result;
+    }
+
     /**
      * Decompress T.6 encoded data. No EOLs, except for 2 consecutive ones at
      * the end (the EOFB, end of fax block). No RTC. No fill bits anywhere. All
@@ -533,12 +552,14 @@ public final class T4AndT6Compression {
      * @return the decompressed data
      * @throws ImageReadException if it fails to read the compressed data
      */
-    public static byte[] decompressT6(final byte[] compressed, final int width, final int height)
+    public static byte[] decompressT6_original(final byte[] compressed, final int width, final int height)
             throws ImageReadException {
         final BitInputStreamFlexible inputStream = new BitInputStreamFlexible(new ByteArrayInputStream(compressed));
         final BitArrayOutputStream outputStream = new BitArrayOutputStream();
         final int[] referenceLine = new int[width];
         for (int y = 0; y < height; y++) {
+            branches[0] = true;
+
             int rowLength = 0;
             try {
                 int codingA0Color = WHITE;
@@ -546,13 +567,19 @@ public final class T4AndT6Compression {
                 int b1 = nextChangingElement(referenceLine, referenceA0Color, 0);
                 int b2 = nextChangingElement(referenceLine, 1 - referenceA0Color, b1 + 1);
                 for (int a0 = 0; a0 < width;) {
+                    branches[1] = true;
+
                     int a1;
                     int a2;
                     final T4_T6_Tables.Entry  entry = CONTROL_CODES.decode(inputStream);
                     if (entry == T4_T6_Tables.P) {
+                        branches[2] = true;
+
                         fillRange(outputStream, referenceLine, a0, b2, codingA0Color);
                         a0 = b2;
                     } else if (entry == T4_T6_Tables.H) {
+                        branches[3] = true;
+
                         final int a0a1 = readTotalRunLength(inputStream, codingA0Color);
                         a1 = a0 + a0a1;
                         fillRange(outputStream, referenceLine, a0, a1, codingA0Color);
@@ -561,22 +588,40 @@ public final class T4AndT6Compression {
                         fillRange(outputStream, referenceLine, a1, a2, 1 - codingA0Color);
                         a0 = a2;
                     } else {
+                        branches[4] = true;
+
                         int a1b1;
                         if (entry == T4_T6_Tables.V0) {
+                            branches[5] = true;
+
                             a1b1 = 0;
                         } else if (entry == T4_T6_Tables.VL1) {
+                            branches[6] = true;
+
                             a1b1 = -1;
                         } else if (entry == T4_T6_Tables.VL2) {
+                            branches[7] = true;
+
                             a1b1 = -2;
                         } else if (entry == T4_T6_Tables.VL3) {
+                            branches[8] = true;
+                            
                             a1b1 = -3;
                         } else if (entry == T4_T6_Tables.VR1) {
+                            branches[9] = true;
+
                             a1b1 = 1;
                         } else if (entry == T4_T6_Tables.VR2) {
+                            branches[10] = true;
+
                             a1b1 = 2;
                         } else if (entry == T4_T6_Tables.VR3) {
+                            branches[11] = true;
+
                             a1b1 = 3;
                         } else {
+                            branches[12] = true;
+
                             throw new ImageReadException("Invalid/unknown T.6 control code " + entry.bitString);
                         }
                         a1 = b1 + a1b1;
@@ -586,24 +631,37 @@ public final class T4AndT6Compression {
                     }
                     referenceA0Color = changingElementAt(referenceLine, a0);
                     if (codingA0Color == referenceA0Color) {
+                        branches[13] = true;
+
                         b1 = nextChangingElement(referenceLine, referenceA0Color, a0 + 1);
                     } else {
+                        branches[14] = true;
+
                         b1 = nextChangingElement(referenceLine, referenceA0Color, a0 + 1);
                         b1 = nextChangingElement(referenceLine, 1 - referenceA0Color, b1 + 1);
                     }
                     b2 = nextChangingElement(referenceLine, 1 - codingA0Color, b1 + 1);
                     rowLength = a0;
                 }
+
+                branches[15] = true;
             } catch (final HuffmanTreeException huffmanException) {
+                branches[16] = true;
+
                 throw new ImageReadException("Decompression error", huffmanException);
             }
 
             if (rowLength == width) {
+                branches[17] = true;
+
                 outputStream.flush();
             } else if (rowLength > width) {
+                branches[18] = true;
+
                 throw new ImageReadException("Unrecoverable row length error in image row " + y);
             }
         }
+        branches[19] = true;
 
         return outputStream.toByteArray();
     }
