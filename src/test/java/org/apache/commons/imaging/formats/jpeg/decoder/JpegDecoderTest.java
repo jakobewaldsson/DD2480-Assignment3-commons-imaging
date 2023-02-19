@@ -18,11 +18,17 @@
 package org.apache.commons.imaging.formats.jpeg.decoder;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.bytesource.ByteSourceFile;
+import org.apache.commons.imaging.formats.jpeg.segments.SosSegment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the JpegDecoder.

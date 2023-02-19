@@ -173,7 +173,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         return null;
     }
 
-    private static class XpmHeader {
+    public static class XpmHeader {
         final int width;
         final int height;
         final int numColors;
@@ -270,6 +270,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
             final StringBuilder stringBuilder) throws IOException, ImageReadException {
         stringBuilder.setLength(0);
         String token = cParser.nextToken();
+        System.out.println(token);
         if (token.charAt(0) != '"') {
             throw new ImageReadException("Parsing XPM file failed, "
                     + "no string found where expected");
@@ -386,7 +387,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         }
     }
 
-    private void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser)
+    public void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser)
             throws IOException, ImageReadException {
         final StringBuilder row = new StringBuilder();
         for (int i = 0; i < xpmHeader.numColors; i++) {
