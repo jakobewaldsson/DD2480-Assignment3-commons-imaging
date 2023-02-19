@@ -90,4 +90,23 @@ public class XpmReadTest extends XpmBaseTest {
         assertTrue(actualMessage.contains(expectedMessage));
         //Assertions.assertThrows(ImageReadException.class, () -> new XpmImageParser().parsePaletteEntries(header, cParser));
     }
+    @Test
+    public void exceptionNextToken() throws IOException, ImageReadException {
+        //parsePaletteEntries(final XpmImageParser.XpmHeader xpmHeader, final BasicCParser cParser)
+        XpmImageParser xpm = new XpmImageParser();
+        XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 1,  1, 2,
+                1,  1,  1,  true);
+        String str = "\"abba";
+        byte[] test = str.getBytes();
+        ByteArrayInputStream byt = new ByteArrayInputStream(test);
+        BasicCParser cParser = new BasicCParser(byt);
+        //xpm.parsePaletteEntries(header, cParser);
+        Exception exception = assertThrows(ImageReadException.class, () -> {
+            new XpmImageParser().parsePaletteEntries(header, cParser);
+        });
+        String expectedMessage = "Unterminated string ends XMP file";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+        //Assertions.assertThrows(ImageReadException.class, () -> new XpmImageParser().parsePaletteEntries(header, cParser));
+    }
 }
