@@ -17,23 +17,23 @@
 
 package org.apache.commons.imaging.formats.icns;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.internal.Debug;
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IcnsRoundTripTest extends IcnsBaseTest {
     // 16x16 test image
@@ -439,6 +439,45 @@ public class IcnsRoundTripTest extends IcnsBaseTest {
                 }
                 assertEquals(imageARGB, dataARGB);
             }
+        }
+    }
+
+    /**
+     * Test the branch of decodeImage where it returns null if the image type is null
+     */
+    @Test()
+    public void testDecodeImageNull() {
+        int type = 0;
+        int elementSize = 0;
+        byte[] data = {};
+        try{
+            IcnsImageParser.IcnsElement[] icnsElements = {new IcnsImageParser.IcnsElement(type, elementSize, data)};
+            BufferedImage bi = IcnsDecoder.decodeImage(icnsElements, 0);
+            assertNull(bi);
+        }catch(Exception ex){
+            fail();
+        }
+    }
+
+    /**
+     * Test the branch of which "return image" is reached in decodeImage(), where image's data equals
+     * null, the width is over 32, so the code enters the if-statement of the image equal null
+     * where a new Buffered image (so not the same object) with the same image width, height and type is returned.
+     */
+    @Test
+    public void test(){
+        int type = IcnsType.ICNS_128x128_32BIT_ARGB_IMAGE.getType();
+        int elementSize = 0;
+        try {
+            IcnsImageParser.IcnsElement[] icnsElements = {new IcnsImageParser.IcnsElement(type, elementSize, null)};
+            BufferedImage bi = IcnsDecoder.decodeImage(icnsElements, 0);
+            BufferedImage bufferedImage = IcnsDecoder.decodeImage(icnsElements, 0);
+            assertNotEquals(bufferedImage, bi);
+            assertEquals(bufferedImage.getWidth(), bi.getWidth());
+            assertEquals(bufferedImage.getHeight(), bi.getHeight());
+            assertEquals(bufferedImage.getType(), bi.getType());
+        }catch (Exception ex){
+            fail();
         }
     }
 }
