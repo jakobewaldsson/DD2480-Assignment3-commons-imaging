@@ -57,7 +57,9 @@ public class ColorConversionsTest {
         }
     }
 
-
+    /**
+     * The test covers the missed branch where L<0.5
+     */
     @Test
     public void testRGBtoHSL_L() {
 
@@ -73,6 +75,10 @@ public class ColorConversionsTest {
 
     }
 
+
+    /**
+     * The test covers a new path that the original tests do not cover
+     */
     @Test
     public void testRGBtoHSL_newPath() {
 
