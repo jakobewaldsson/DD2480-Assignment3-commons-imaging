@@ -58,7 +58,7 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
     private final DhtSegment.HuffmanTable[] huffmanDCTables = new DhtSegment.HuffmanTable[4];
     private final DhtSegment.HuffmanTable[] huffmanACTables = new DhtSegment.HuffmanTable[4];
     private SofnSegment sofnSegment;
-    private SosSegment sosSegment;
+    public SosSegment sosSegment;
     private final float[][] scaledQuantizationTables = new float[4][];
     private BufferedImage image;
     private ImageReadException imageReadException;
@@ -339,7 +339,7 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
         return mcu;
     }
 
-    private void readMCU(final JpegInputStream is, final int[] preds, final Block[] mcu)
+    public void readMCU(final JpegInputStream is, final int[] preds, final Block[] mcu)
             throws ImageReadException {
         for (int i = 0; i < sosSegment.numberOfComponents; i++) {
             final SosSegment.Component scanComponent = sosSegment.getComponents(i);

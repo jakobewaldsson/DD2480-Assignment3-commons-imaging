@@ -90,6 +90,11 @@
   <build>
     <defaultGoal>clean verify apache-rat:check checkstyle:check spotbugs:check javadoc:javadoc</defaultGoal>
     <plugins>
+    <plugin>
+            <groupId>org.openclover</groupId>
+            <artifactId>clover-maven-plugin</artifactId>
+            <version>4.4.1</version>     
+        </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -215,6 +220,12 @@
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>org.openclover</groupId>
+      <artifactId>clover-maven-plugin</artifactId>
+      <version>4.4.1</version>
+      <type>maven-plugin</type>
+    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

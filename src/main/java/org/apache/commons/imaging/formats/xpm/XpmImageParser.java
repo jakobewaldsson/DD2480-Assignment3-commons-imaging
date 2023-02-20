@@ -63,7 +63,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         'C', 'Z', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'P', 'I',
         'U', 'Y', 'T', 'R', 'E', 'W', 'Q', '!', '~', '^', '/', '(', ')',
         '_', '`', '\'', ']', '[', '{', '}', '|', };
-
+    public boolean testVariable = false;
     private static void loadColorNames() throws ImageReadException {
         synchronized (XpmImageParser.class) {
             if (colorNames != null) {
@@ -173,7 +173,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         return null;
     }
 
-    private static class XpmHeader {
+    public static class XpmHeader {
         final int width;
         final int height;
         final int numColors;
@@ -386,7 +386,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         }
     }
 
-    private void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser)
+    public void parsePaletteEntries(final XpmHeader xpmHeader, final BasicCParser cParser)
             throws IOException, ImageReadException {
         final StringBuilder row = new StringBuilder();
         for (int i = 0; i < xpmHeader.numColors; i++) {
@@ -420,8 +420,10 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
                         populatePaletteEntry(paletteEntry, key, color);
                     }
                     previousKeyIndex = j;
-                } else {
+                }
+                else {
                     if (previousKeyIndex < 0) {
+                        testVariable = true;
                         break;
                     }
                     if (colorBuffer.length() > 0) {
