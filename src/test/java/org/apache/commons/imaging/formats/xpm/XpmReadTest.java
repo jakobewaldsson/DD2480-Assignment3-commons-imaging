@@ -53,16 +53,19 @@ public class XpmReadTest extends XpmBaseTest {
             assertNotNull(image);
         }
     }
+
+    /**
+     * Invokes a exception in the parseNextString function in XpmImageParser.java. This exception gets thrown when
+     * the cParser has invalid xpm format which is when the byte array is not starting with ". This exception is then
+     * asserted through comparing which exception is thrown and the description.
+     */
     @Test
     public void exceptionParseNextString(){
-        //parsePaletteEntries(final XpmImageParser.XpmHeader xpmHeader, final BasicCParser cParser)
-        //XpmImageParser xpm = new XpmImageParser();
         XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 1,  1, 2,
          1,  1,  1,  true);
         byte[] buf = {95, 34}; // _ , "
         ByteArrayInputStream byt = new ByteArrayInputStream(buf);
         BasicCParser cParser = new BasicCParser(byt);
-        //xpm.parsePaletteEntries(header, cParser);
         Exception exception = assertThrows(ImageReadException.class, () -> {
             new XpmImageParser().parsePaletteEntries(header, cParser);
                 });
@@ -71,28 +74,13 @@ public class XpmReadTest extends XpmBaseTest {
         assertTrue(actualMessage.contains(expectedMessage));
         Assertions.assertThrows(ImageReadException.class, () -> new XpmImageParser().parsePaletteEntries(header, cParser));
     }
+    /**
+     * Invokes a exception in the NextToken function in BasicCParser.java. This exception gets thrown when
+     * the cParser has invalid xpm format which is when the byte array is not ending with a ". This exception is then
+     * asserted through comparing which exception is thrown and the description.
+     */
     @Test
-    public void exceptionParsePaletteEntries() throws IOException, ImageReadException {
-        //parsePaletteEntries(final XpmImageParser.XpmHeader xpmHeader, final BasicCParser cParser)
-        //XpmImageParser xpm = new XpmImageParser();
-        XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 1,  1, 2,
-                1,  1,  1,  true);
-        String str = "\"abba\"}";
-        byte[] test = str.getBytes();
-        ByteArrayInputStream byt = new ByteArrayInputStream(test);
-        BasicCParser cParser = new BasicCParser(byt);
-        //xpm.parsePaletteEntries(header, cParser);
-        Exception exception = assertThrows(ImageReadException.class, () -> {
-            new XpmImageParser().parsePaletteEntries(header, cParser);
-        });
-        String expectedMessage = "Parsing XPM file failed, " + "file ended while reading palette";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
-        //Assertions.assertThrows(ImageReadException.class, () -> new XpmImageParser().parsePaletteEntries(header, cParser));
-    }
-    @Test
-    public void exceptionNextToken() throws IOException, ImageReadException {
-        //parsePaletteEntries(final XpmImageParser.XpmHeader xpmHeader, final BasicCParser cParser)
+    public void exceptionNextToken() {
         XpmImageParser xpm = new XpmImageParser();
         XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 1,  1, 2,
                 1,  1,  1,  true);
@@ -100,13 +88,49 @@ public class XpmReadTest extends XpmBaseTest {
         byte[] test = str.getBytes();
         ByteArrayInputStream byt = new ByteArrayInputStream(test);
         BasicCParser cParser = new BasicCParser(byt);
-        //xpm.parsePaletteEntries(header, cParser);
         Exception exception = assertThrows(ImageReadException.class, () -> {
             new XpmImageParser().parsePaletteEntries(header, cParser);
         });
         String expectedMessage = "Unterminated string ends XMP file";
         String actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
-        //Assertions.assertThrows(ImageReadException.class, () -> new XpmImageParser().parsePaletteEntries(header, cParser));
+    }
+    /**
+     * Invokes a exception in the parsePaletteEntries function in XpmImageParser.java. This exception gets thrown when
+     * the there only exist 1 string as the byte[] input for the cParser. This exception is then
+     * asserted through comparing which exception is thrown and the description.
+     */
+    @Test
+    public void exceptionParsePaletteEntries()  {
+        XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 1,  1, 2,
+                1,  1,  1,  true);
+        String str = "\"abba\"}";
+        byte[] test = str.getBytes();
+        ByteArrayInputStream byt = new ByteArrayInputStream(test);
+        BasicCParser cParser = new BasicCParser(byt);
+        Exception exception = assertThrows(ImageReadException.class, () -> {
+            new XpmImageParser().parsePaletteEntries(header, cParser);
+        });
+        String expectedMessage = "Parsing XPM file failed, " + "file ended while reading palette";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+    /**
+     * Checks wheter a break branch is used in the parsePaletteEntries function. This is done by avoiding the isKey boolean
+     * in the function, where "m","g4","g","c" and "s" can't be used in the input byte[] of the cParser. This gets asserted
+     * through usage of a global boolean which is set to true when
+     */
+    @Test
+    public void CheckParsePaletteEntriesBranch() throws IOException, ImageReadException {
+        XpmImageParser xpm = new XpmImageParser();
+        XpmImageParser.XpmHeader header = new XpmImageParser.XpmHeader( 2,  1, 1,
+                1,  1,  1,  true);
+        String str = "\"ccc\" , \"___\"}";
+        byte[] test = str.getBytes();
+        ByteArrayInputStream byt = new ByteArrayInputStream(test);
+        BasicCParser cParser = new BasicCParser(byt);
+        assertFalse(xpm.testVariable);
+        xpm.parsePaletteEntries(header, cParser);
+        assertTrue(xpm.testVariable);
     }
 }

@@ -63,7 +63,7 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
         'C', 'Z', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'P', 'I',
         'U', 'Y', 'T', 'R', 'E', 'W', 'Q', '!', '~', '^', '/', '(', ')',
         '_', '`', '\'', ']', '[', '{', '}', '|', };
-
+    public boolean testVariable = false;
     private static void loadColorNames() throws ImageReadException {
         synchronized (XpmImageParser.class) {
             if (colorNames != null) {
@@ -270,7 +270,6 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
             final StringBuilder stringBuilder) throws IOException, ImageReadException {
         stringBuilder.setLength(0);
         String token = cParser.nextToken();
-        System.out.println(token);
         if (token.charAt(0) != '"') {
             throw new ImageReadException("Parsing XPM file failed, "
                     + "no string found where expected");
@@ -421,8 +420,10 @@ public class XpmImageParser extends ImageParser<XpmImagingParameters> {
                         populatePaletteEntry(paletteEntry, key, color);
                     }
                     previousKeyIndex = j;
-                } else {
+                }
+                else {
                     if (previousKeyIndex < 0) {
+                        testVariable = true;
                         break;
                     }
                     if (colorBuffer.length() > 0) {
