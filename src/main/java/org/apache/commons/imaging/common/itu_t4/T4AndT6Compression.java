@@ -523,6 +523,13 @@ public final class T4AndT6Compression {
     }
 
 
+    /**
+     * Compute the a1b1 value according to the type of control code
+     *
+     * @param entry in the T4_T6_Tables
+     * @return a1b1 value
+     * @throws ImageReadException if the control code does not exist
+     */
     public static int compute_a1b1(T4_T6_Tables.Entry entry) throws ImageReadException {
 
         int a1b1;
@@ -544,10 +551,8 @@ public final class T4AndT6Compression {
         } else {
             throw new ImageReadException("Invalid/unknown T.6 control code " + entry.bitString);
         }
-
         return a1b1;
     }
-
 
 
     /**
@@ -590,23 +595,6 @@ public final class T4AndT6Compression {
                         a0 = a2;
                     } else {
                         int a1b1 = compute_a1b1(entry);
-//                        if (entry == T4_T6_Tables.V0) {
-//                            a1b1 = 0;
-//                        } else if (entry == T4_T6_Tables.VL1) {
-//                            a1b1 = -1;
-//                        } else if (entry == T4_T6_Tables.VL2) {
-//                            a1b1 = -2;
-//                        } else if (entry == T4_T6_Tables.VL3) {
-//                            a1b1 = -3;
-//                        } else if (entry == T4_T6_Tables.VR1) {
-//                            a1b1 = 1;
-//                        } else if (entry == T4_T6_Tables.VR2) {
-//                            a1b1 = 2;
-//                        } else if (entry == T4_T6_Tables.VR3) {
-//                            a1b1 = 3;
-//                        } else {
-//                            throw new ImageReadException("Invalid/unknown T.6 control code " + entry.bitString);
-//                        }
                         a1 = b1 + a1b1;
                         fillRange(outputStream, referenceLine, a0, a1, codingA0Color);
                         a0 = a1;
