@@ -31,7 +31,40 @@ import org.apache.commons.imaging.formats.jpeg.JpegImagingParameters;
 import org.apache.commons.imaging.formats.jpeg.JpegUtils;
 import org.junit.jupiter.api.Test;
 
+
+import org.apache.commons.imaging.formats.jpeg.segments.Segment;
+
 public class NegSizeSegmentTest {
+
+    @Test
+    public void testGetSegmentTypeBasic() {
+        Segment s = new Segment(0xffc0, 0) {
+            public String getDescription() {
+                return "Basic segment test";
+            }
+        };
+        assertEquals(s.getSegmentType(), "Start Of Frame, Baseline Dct, Huffman coding");
+    }
+
+    @Test
+    public void testGetSegmentTypeReserved() {
+        Segment s = new Segment(0xff03, 0) {
+            public String getDescription() {
+                return "Reserved segment test";
+            }
+        };
+        assertEquals(s.getSegmentType(), "Reserved");
+    }
+
+    @Test
+    public void testGetSegmentTypeApp() {
+        Segment s = new Segment(0xffe1, 0) {
+            public String getDescription() {
+                return "App segment test";
+            }
+        };
+        assertEquals(s.getSegmentType(), "APP1");
+    }
 
     @Test
     public void testCreatesNegSizeSegment() throws IOException {
