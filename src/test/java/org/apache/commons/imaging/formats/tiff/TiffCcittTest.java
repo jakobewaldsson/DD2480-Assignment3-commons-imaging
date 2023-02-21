@@ -18,6 +18,7 @@
 package org.apache.commons.imaging.formats.tiff;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.awt.image.BufferedImage;
@@ -134,6 +135,16 @@ public class TiffCcittTest extends TiffBaseTest {
                 fail();
             }
         } while (nextCombination(combinations, 1));
+    }
+
+    @Test
+    public void testCompressT6Throw() {
+        final byte[] compressed = new byte[2];
+        compressed[0] = 64;
+        ImageReadException thrown = assertThrows(ImageReadException.class, () -> {
+            T4AndT6Compression.decompressT6(compressed,2, 1);
+        }, "ImageReadException was expected");
+        assertEquals(thrown.getMessage(), "Decompression error");            
     }
 
     @Test
