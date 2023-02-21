@@ -18,8 +18,8 @@ package org.apache.commons.imaging.color;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +29,21 @@ public class ColorCieLabTest {
     private ColorCieLab color;
     private ColorCieLab colorCopy;
 
+    private ColorDin99Lab colorDin99;
+    private ColorDin99Lab colorDin99Copy;
+    private ColorDin99Lab color_L99;
+    private ColorDin99Lab color_a99;
+    private ColorDin99Lab color_b99;
+
     @BeforeEach
     public void setUp() {
         color = new ColorCieLab(1.0, 2.0, 3.0);
         colorCopy = new ColorCieLab(1.0, 2.0, 3.0);
+        colorDin99 = new ColorDin99Lab(0.1, 0.2, 0.3);
+        colorDin99Copy = new ColorDin99Lab(0.1, 0.2, 0.3);
+        color_L99 = new ColorDin99Lab(0.5, 0.2, 0.3);
+        color_a99 = new ColorDin99Lab(0.1, 0.5, 0.3);
+        color_b99 = new ColorDin99Lab(0.1, 0.2, 0.5);
     }
 
     @Test
@@ -60,4 +71,41 @@ public class ColorCieLabTest {
         assertTrue(color.equals(colorCopy) && colorCopy.equals(color));
         assertThat(color.hashCode(), is(colorCopy.hashCode()));
     }
+
+    @Test
+    public void testl99Assignment() {
+        assertEquals(0.1, colorDin99.L99, 0.0);
+    }
+
+    @Test
+    public void testa99Assignment() {
+        assertEquals(0.2, colorDin99.a99, 0.0);
+    }
+
+    @Test
+    public void testb99Assignment() {
+        assertEquals(0.3, colorDin99.b99, 0.0);
+    }
+
+    @Test
+    public void testToStringDin99() {
+        assertEquals("{L: 0.1, a: 0.2, b: 0.3}", colorDin99.toString());
+    }
+
+    @Test
+    public void testEquals() {
+        assertTrue(colorDin99.equals(colorDin99Copy));
+        assertTrue(colorDin99.equals(colorDin99));
+        assertFalse(colorDin99.equals(color_L99));
+        assertFalse(colorDin99.equals(color_a99));
+        assertFalse(colorDin99.equals(color_b99));
+        assertFalse(colorDin99.equals(null));
+
+    }
+
+    @Test
+    public void testHashCode() {
+        assertThat(colorDin99.hashCode(), is(colorDin99Copy.hashCode()));
+    }
+
 }
