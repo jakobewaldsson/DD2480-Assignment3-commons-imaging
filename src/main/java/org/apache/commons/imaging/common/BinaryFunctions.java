@@ -38,23 +38,23 @@ public final class BinaryFunctions {
     }
 
     public static boolean startsWith(final byte[] haystack, final byte[] needle) {
-        if (needle == null) {
+        if (needle == null) { //Needle being null is currently not tested
             return false;
         }
-        if (haystack == null) {
+        if (haystack == null) {//Haystack being null is currently not tested
             return false;
         }
-        if (needle.length > haystack.length) {
+        if (needle.length > haystack.length) {//Needle being longer than haystack is currently not tested
             return false;
         }
 
         for (int i = 0; i < needle.length; i++) {
-            if (needle[i] != haystack[i]) {
+            if (needle[i] != haystack[i]) { //A false testcase where the needle does not match the start of the haystack is not tested
                 return false;
             }
         }
 
-        return true;
+        return true; //Matching haystack and needle is tested
     }
 
     public static boolean startsWith(final byte[] haystack, final BinaryConstant needle) {
@@ -87,7 +87,7 @@ public final class BinaryFunctions {
     }
 
     public static byte[] readBytes(final String name, final InputStream is, final int length,
-            final String exception) throws IOException {
+                                   final String exception) throws IOException {
         if (length < 0) {
             throw new IOException(String.format("%s, invalid length: %d", exception, length));
         }
@@ -111,7 +111,7 @@ public final class BinaryFunctions {
     }
 
     public static void readAndVerifyBytes(final InputStream is, final byte[] expected,
-            final String exception) throws ImageReadException, IOException {
+                                          final String exception) throws ImageReadException, IOException {
         for (final byte element : expected) {
             final int data = is.read();
             final byte b = (byte) (0xff & data);
@@ -127,7 +127,7 @@ public final class BinaryFunctions {
     }
 
     public static void readAndVerifyBytes(final InputStream is,
-            final BinaryConstant expected, final String exception)
+                                          final BinaryConstant expected, final String exception)
             throws ImageReadException, IOException {
         for (int i = 0; i < expected.size(); i++) {
             final int data = is.read();
@@ -173,7 +173,7 @@ public final class BinaryFunctions {
     }
 
     public static boolean compareBytes(final byte[] a, final int aStart, final byte[] b,
-            final int bStart, final int length) {
+                                       final int bStart, final int length) {
         if (a.length < (aStart + length)) {
             return false;
         }
@@ -191,7 +191,7 @@ public final class BinaryFunctions {
     }
 
     public static int read4Bytes(final String name, final InputStream is,
-            final String exception, final ByteOrder byteOrder) throws IOException {
+                                 final String exception, final ByteOrder byteOrder) throws IOException {
         final int byte0 = is.read();
         final int byte1 = is.read();
         final int byte2 = is.read();
@@ -213,8 +213,8 @@ public final class BinaryFunctions {
     }
 
     public static int read3Bytes(final String name, final InputStream is,
-            final String exception, final ByteOrder byteOrder) throws IOException {
-        final int byte0 = is.read();
+                                 final String exception, final ByteOrder byteOrder) throws IOException {
+        final int byte0 = is.read(); //This function is not tested.
         final int byte1 = is.read();
         final int byte2 = is.read();
         if ((byte0 | byte1 | byte2) < 0) {
@@ -222,11 +222,11 @@ public final class BinaryFunctions {
         }
 
         final int result;
-        if (byteOrder == ByteOrder.BIG_ENDIAN) {
+        if (byteOrder == ByteOrder.BIG_ENDIAN) {//Using Big endian byte order is not tested
             result = (byte0 << 16) | (byte1 << 8)
                     | (byte2 << 0);
         } else {
-            result = (byte2 << 16) | (byte1 << 8)
+            result = (byte2 << 16) | (byte1 << 8) //Using little endian byte order is not tested
                     | (byte0 << 0);
         }
 
@@ -234,7 +234,7 @@ public final class BinaryFunctions {
     }
 
     public static int read2Bytes(final String name, final InputStream is,
-            final String exception, final ByteOrder byteOrder) throws IOException {
+                                 final String exception, final ByteOrder byteOrder) throws IOException {
         final int byte0 = is.read();
         final int byte1 = is.read();
         if ((byte0 | byte1) < 0) {
@@ -306,13 +306,13 @@ public final class BinaryFunctions {
             if (needle[position] == b) {
                 position++;
                 if (position == needle.length) {
-                    return true;
+                    return true; //Quad being found is untested
                 }
             } else {
                 position = 0;
             }
         }
-        return false;
+        return false; //Quad not being found is tested
     }
 
     public static int findNull(final byte[] src) {
@@ -329,7 +329,7 @@ public final class BinaryFunctions {
     }
 
     public static byte[] getRAFBytes(final RandomAccessFile raf, final long pos,
-            final int length, final String exception) throws IOException {
+                                     final int length, final String exception) throws IOException {
         if (length < 0) {
             throw new IOException(String.format("%s, invalid length: %d", exception, length));
         }

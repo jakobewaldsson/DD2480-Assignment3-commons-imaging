@@ -57,6 +57,44 @@ public class ColorConversionsTest {
         }
     }
 
+    /**
+     * The test covers the missed branch where L<0.5
+     */
+    @Test
+    public void testRGBtoHSL_L() {
+
+        final int rgb = 0xff090800;
+
+        final ColorHsl hsl = ColorConversions.convertRGBtoHSL(rgb);
+        final int hsl_rgb = ColorConversions.convertHSLtoRGB(hsl);
+
+        Debug.debug("hsl: " + hsl);
+        Debug.debug("hsl_rgb: " + hsl_rgb + " (" + Integer.toHexString(hsl_rgb) + ")");
+
+        assertEquals(toHexString(0xffffff & rgb), toHexString(0xffffff & hsl_rgb));
+
+    }
+
+
+    /**
+     * The test covers a new path that the original tests do not cover
+     */
+    @Test
+    public void testRGBtoHSL_newPath() {
+
+        final int rgb = 0xff111003;
+
+        final ColorHsl hsl = ColorConversions.convertRGBtoHSL(rgb);
+        final int hsl_rgb = ColorConversions.convertHSLtoRGB(hsl);
+
+        Debug.debug("hsl: " + hsl);
+        Debug.debug("hsl_rgb: " + hsl_rgb + " (" + Integer.toHexString(hsl_rgb) + ")");
+
+        assertEquals(toHexString(0xffffff & rgb), toHexString(0xffffff & hsl_rgb));
+
+    }
+
+
     @Test
     public void testRGBtoHSV() {
         for (final int rgb : SAMPLE_RGBS) {
