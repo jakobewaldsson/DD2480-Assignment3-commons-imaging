@@ -20,6 +20,59 @@ import java.io.PrintWriter;
 
 import org.apache.commons.imaging.common.BinaryFileParser;
 
+import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
+
+class SegmentTypes {
+    public static final Map<Integer, String> segmentTypesMap;
+    static {
+        Map<Integer, String> segmentTypesTemp = new HashMap<>();
+        segmentTypesTemp.put(0xffc0, "Start Of Frame, Baseline Dct, Huffman coding");
+        segmentTypesTemp.put(0xffc1, "Start Of Frame, Extended sequential Dct, Huffman coding");
+        segmentTypesTemp.put(0xffc2, "Start Of Frame, Progressive Dct, Huffman coding");
+        segmentTypesTemp.put(0xffc3, "Start Of Frame, Lossless (sequential), Huffman coding");
+
+        segmentTypesTemp.put(0xffc5, "Start Of Frame, Differential sequential Dct, Huffman coding");
+        segmentTypesTemp.put(0xffc6, "Start Of Frame, Differential progressive Dct, Huffman coding");
+        segmentTypesTemp.put(0xffc7, "Start Of Frame, Differential lossless (sequential), Huffman coding");
+
+        segmentTypesTemp.put(0xffc8, "Start Of Frame, Reserved for JPEG extensions, arithmetic coding");
+        segmentTypesTemp.put(0xffc9, "Start Of Frame, Extended sequential Dct, arithmetic coding");
+        segmentTypesTemp.put(0xffca, "Start Of Frame, Progressive Dct, arithmetic coding");
+        segmentTypesTemp.put(0xffcb, "Start Of Frame, Lossless (sequential), arithmetic coding");
+
+        segmentTypesTemp.put(0xffcd, "Start Of Frame, Differential sequential Dct, arithmetic coding");
+        segmentTypesTemp.put(0xffce, "Start Of Frame, Differential progressive Dct, arithmetic coding");
+        segmentTypesTemp.put(0xffcf, "Start Of Frame, Differential lossless (sequential), arithmetic coding");
+
+        segmentTypesTemp.put(0xffc4, "Define Huffman table(s)");
+        segmentTypesTemp.put(0xffcc, "Define arithmetic coding conditioning(s)");
+
+        segmentTypesTemp.put(0xffd0, "Restart with modulo 8 count 0");
+        segmentTypesTemp.put(0xffd1, "Restart with modulo 8 count 1");
+        segmentTypesTemp.put(0xffd2, "Restart with modulo 8 count 2");
+        segmentTypesTemp.put(0xffd3, "Restart with modulo 8 count 3");
+        segmentTypesTemp.put(0xffd4, "Restart with modulo 8 count 4");
+        segmentTypesTemp.put(0xffd5, "Restart with modulo 8 count 5");
+        segmentTypesTemp.put(0xffd6, "Restart with modulo 8 count 6");
+        segmentTypesTemp.put(0xffd7, "Restart with modulo 8 count 7");
+
+        segmentTypesTemp.put(0xffd8, "Start of image");
+        segmentTypesTemp.put(0xffd9, "End of image");
+        segmentTypesTemp.put(0xffda, "Start of scan");
+        segmentTypesTemp.put(0xffdb, "Define quantization table(s)");
+        segmentTypesTemp.put(0xffdc, "Define number of lines");
+        segmentTypesTemp.put(0xffdd, "Define restart interval");
+        segmentTypesTemp.put(0xffde, "Define hierarchical progression");
+        segmentTypesTemp.put(0xffdf, "Expand reference component(s)");
+
+        segmentTypesTemp.put(0xfffe, "Comment");
+        segmentTypesTemp.put(0xff01, "For temporary private use in arithmetic coding");
+        segmentTypesMap = Collections.unmodifiableMap(segmentTypesTemp);
+    }
+}
+
 public abstract class Segment extends BinaryFileParser {
     public final int marker;
     public final int length;
@@ -43,90 +96,10 @@ public abstract class Segment extends BinaryFileParser {
     }
 
     public String getSegmentType() {
+        String type = SegmentTypes.segmentTypesMap.get(marker);
 
-        switch (marker) {
-        case 0xffc0:
-            return "Start Of Frame, Baseline Dct, Huffman coding";
-        case 0xffc1:
-            return "Start Of Frame, Extended sequential Dct, Huffman coding";
-        case 0xffc2:
-            return "Start Of Frame, Progressive Dct, Huffman coding";
-        case 0xffc3:
-            return "Start Of Frame, Lossless (sequential), Huffman coding";
-
-        case 0xffc5:
-            return "Start Of Frame, Differential sequential Dct, Huffman coding";
-        case 0xffc6:
-            return "Start Of Frame, Differential progressive Dct, Huffman coding";
-        case 0xffc7:
-            return "Start Of Frame, Differential lossless (sequential), Huffman coding";
-
-        case 0xffc8:
-            return "Start Of Frame, Reserved for JPEG extensions, arithmetic coding";
-        case 0xffc9:
-            return "Start Of Frame, Extended sequential Dct, arithmetic coding";
-        case 0xffca:
-            return "Start Of Frame, Progressive Dct, arithmetic coding";
-        case 0xffcb:
-            return "Start Of Frame, Lossless (sequential), arithmetic coding";
-
-        case 0xffcd:
-            return "Start Of Frame, Differential sequential Dct, arithmetic coding";
-        case 0xffce:
-            return "Start Of Frame, Differential progressive Dct, arithmetic coding";
-        case 0xffcf:
-            return "Start Of Frame, Differential lossless (sequential), arithmetic coding";
-
-        case 0xffc4:
-            return "Define Huffman table(s)";
-        case 0xffcc:
-            return "Define arithmetic coding conditioning(s)";
-
-        case 0xffd0:
-            return "Restart with modulo 8 count 0";
-        case 0xffd1:
-            return "Restart with modulo 8 count 1";
-        case 0xffd2:
-            return "Restart with modulo 8 count 2";
-        case 0xffd3:
-            return "Restart with modulo 8 count 3";
-        case 0xffd4:
-            return "Restart with modulo 8 count 4";
-        case 0xffd5:
-            return "Restart with modulo 8 count 5";
-        case 0xffd6:
-            return "Restart with modulo 8 count 6";
-        case 0xffd7:
-            return "Restart with modulo 8 count 7";
-
-        case 0xffd8:
-            return "Start of image";
-        case 0xffd9:
-            return "End of image";
-        case 0xffda:
-            return "Start of scan";
-        case 0xffdb:
-            return "Define quantization table(s)";
-        case 0xffdc:
-            return "Define number of lines";
-        case 0xffdd:
-            return "Define restart interval";
-        case 0xffde:
-            return "Define hierarchical progression";
-        case 0xffdf:
-            return "Expand reference component(s)";
-            // case 0xffd8 :
-            // return "Reserved for application segments";
-            // case 0xffd8 :
-            // return "Reserved for JPEG extensions";
-        case 0xfffe:
-            return "Comment";
-        case 0xff01:
-            return "For temporary private use in arithmetic coding";
-            // case 0xffd8 :
-            // return "Reserved";
-
-        default:
+        if (type != null) {
+            return type;
         }
 
         if ((marker >= 0xff02) && (marker <= 0xffbf)) {
