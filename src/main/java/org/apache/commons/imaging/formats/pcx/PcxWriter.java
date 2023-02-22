@@ -59,12 +59,7 @@ class PcxWriter {
         }
     }
 
-    public void writeImage(final BufferedImage src, final OutputStream os)
-            throws IOException {
-        final PaletteFactory paletteFactory = new PaletteFactory();
-        final SimplePalette palette = paletteFactory.makeExactRgbPaletteSimple(src, 256);
-        final BinaryOutputStream bos = new BinaryOutputStream(os,
-                ByteOrder.LITTLE_ENDIAN);
+    public int[] findDepthAndPlanes(SimplePalette palette) {
         final int bitDepth;
         final int planes;
         if (palette == null || bitDepthWanted == 24 || bitDepthWanted == 32) {
@@ -119,6 +114,19 @@ class PcxWriter {
                 planes = 2;
             }
         }
+        return new int[]{bitDepth, planes};
+    }
+
+    public void writeImage(final BufferedImage src, final OutputStream os)
+            throws IOException {
+        final PaletteFactory paletteFactory = new PaletteFactory();
+        final SimplePalette palette = paletteFactory.makeExactRgbPaletteSimple(src, 256);
+        final BinaryOutputStream bos = new BinaryOutputStream(os,
+                ByteOrder.LITTLE_ENDIAN);
+
+        final int[] depthAndPlanes = findDepthAndPlanes(palette);
+        final int bitDepth = depthAndPlanes[0];
+        final int planes = depthAndPlanes[1];
 
         int bytesPerLine = (bitDepth * src.getWidth() + 7) / 8;
         if ((bytesPerLine % 2) != 0) {
