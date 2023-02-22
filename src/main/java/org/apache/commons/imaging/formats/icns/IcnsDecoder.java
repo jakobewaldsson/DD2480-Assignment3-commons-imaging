@@ -211,17 +211,19 @@ final class IcnsDecoder {
         }
 
         // PNG or JPEG 2000
-        if (imageType == IcnsType.ICNS_16x16_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_32x32_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_64x64_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_128x128_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_256x256_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_512x512_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_1024x1024_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_32x32_2x_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_64x64_2x_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_256x256_2x_32BIT_ARGB_IMAGE
-            || imageType == IcnsType.ICNS_512x512_2x_32BIT_ARGB_IMAGE) {
+        ArrayList<IcnsType> IcnsTypeList = new ArrayList<>();
+        IcnsTypeList.add(IcnsType.ICNS_16x16_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_32x32_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_64x64_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_128x128_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_256x256_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_512x512_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_1024x1024_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_32x32_2x_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_64x64_2x_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_256x256_2x_32BIT_ARGB_IMAGE);
+        IcnsTypeList.add(IcnsType.ICNS_512x512_2x_32BIT_ARGB_IMAGE);
+        if(IcnsTypeList.contains(imageType)){
             BufferedImage image = null;
             try {
                 image = Imaging.getBufferedImage(imageElement.data);
