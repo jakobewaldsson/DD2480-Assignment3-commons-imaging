@@ -223,9 +223,6 @@ final class IcnsDecoder {
         IcnsTypeList.add(IcnsType.ICNS_64x64_2x_32BIT_ARGB_IMAGE);
         IcnsTypeList.add(IcnsType.ICNS_256x256_2x_32BIT_ARGB_IMAGE);
         IcnsTypeList.add(IcnsType.ICNS_512x512_2x_32BIT_ARGB_IMAGE);
-        if (imageType == null) {
-            return null;
-        }
         if(IcnsTypeList.contains(imageType)){
             BufferedImage image = null;
             try {
